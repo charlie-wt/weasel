@@ -5,3 +5,5 @@
 
 void gen_population ( int numchars, char characters[numchars+1],
                       int size, int len_target, char pop[size][len_target+1] );
+
+int fitness ( char* individual, char* target );
