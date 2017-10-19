@@ -21,9 +21,5 @@ unsigned int hill_climber ( char* target, char* alphabet );
 
 unsigned int ga_no_crossover ( int pop_size, char* target,
                                char* alphabet, int tournament_k );
-//int hill_climber ( int pop_size, int len_target, char target[len_target+1],
-//                   int len_alpha, char alphabet[len_alpha], int tournament_k );
 
 void print_arr ( int size, int* arr );
-
-void test_rng ( int chance, int repeats );

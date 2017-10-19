@@ -1,40 +1,15 @@
 #include "main.h"
 
 int main () {
-	// initialise
+	/* initialise. */
 	char* alphabet = "abcdefghijklmnopqrstuvwxyz ";
 	char* target = "methinks it is like a weasel";
 
-//	int pop_size = 10;
-//	int len_alpha = (int)strlen(alphabet);
-//	int length = (int)strlen(target);
-//
-//	char pop[pop_size][length+1];
-//	gen_population(len_alpha, alphabet, pop_size, length, pop);
-//
-//	int pop_fitness[pop_size];
-//	for ( int i=0; i<pop_size; i++ ) {
-//		pop_fitness[i] = fitness(pop[i], target);
-//	}
-//
-//	// print
-//	printf("  target: %s\n", target);
-//	for ( int i=0; i<pop_size; i++ ) {
-//		printf("member %i: %s -> %i\n", i, pop[i], pop_fitness[i]);
-//	}
-//
-//	// perform tournament selection
-//	char* winner = pop[tournament(5, pop_size, length, pop, pop_fitness)];
-//	printf("the winner was %s\n", winner);
-//
-//	// mutate the winner
-//	char mutant[length+1];
-//	mutate(length, winner, mutant, len_alpha, alphabet);
-//	printf("now mutated to %s\n", mutant);
+	/* hill climber. */
 	int attempts = hill_climber(target, alphabet);
 	printf("took %i attempts with the hill climber.\n", attempts);
 
-	// return
+	/* return. */
 	return 0;
 }
 
@@ -219,14 +194,4 @@ unsigned int ga_no_crossover ( int pop_size, char* target,
 
 	/* return number of attempts. */
 	return attempts;
-}
-
-void test_rng ( int chance, int repeats ) {
-	int hits = 0;
-	int tries = 0;
-	while ( hits < repeats ) {
-		tries++;
-		if ( !(rand() % chance) ) { hits++; }
-	}
-	printf("average: %f tries.\n", (tries / (float)repeats));
 }
