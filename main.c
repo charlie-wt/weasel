@@ -6,8 +6,14 @@ int main () {
 	char* target = "methinks it is like a weasel";
 
 	/* hill climber. */
-	int attempts = hill_climber(target, alphabet);
-	printf("took %i attempts with the hill climber.\n", attempts);
+	printf("=== HILL CLIMBER ===\n");
+	int hill_attempts = hill_climber(target, alphabet);
+	printf("took %i attempts with the hill climber.\n", hill_attempts);
+
+	/* non-crossover ga */
+	printf("=== GA, NO CROSSOVER ===\n");
+	int nga_attempts = ga_no_crossover(10, target, alphabet, 2);
+	printf("took %i attempts with the non-crossover genetic algorithm.\n", nga_attempts);
 
 	/* return. */
 	return 0;
@@ -64,7 +70,7 @@ void mutate ( unsigned int len, char original[len+1], char mutant[len+1],
  * highest fitness. */
 int tournament ( unsigned int k, int pop_size, int len_target,
                  char pop[pop_size][len_target+1],
-                 int pop_fitness[pop_size] ) {
+                 int pop_fitness[pop_size], int return_winner ) {
 	// get tournament members
 	int idxs[k];
 	idxs[0] = rand() % pop_size;
@@ -76,19 +82,30 @@ int tournament ( unsigned int k, int pop_size, int len_target,
 		idxs[i] = idx;
 	}
 
+	// when selecting a member to remove at each step, use inverse-tournament.
+	int better (int a, int b) { return a > b; }
+	int worse (int a, int b) { return a < b; }
+	int (*compete)(int a, int b);
+	if (return_winner) {
+		compete = better;
+	} else {
+		compete = worse;
+	}
+
 	// have tournament
 	int best_fitness = 0;
 	int best_individual = idxs[0];
 	for ( int i=0; i<k; i++ ) {
-		if ( pop_fitness[idxs[i]] > best_fitness ) {
+//		if ( pop_fitness[idxs[i]] > best_fitness ) {
+		if ( compete(pop_fitness[idxs[i]], best_fitness) ) {
 			best_fitness = pop_fitness[idxs[i]];
 			best_individual = idxs[i];
 		}
 	}
 
-	printf("in the tournament of members ");
-	print_arr(k, idxs);
-	printf(", the winner was %i (fitness %i)\n", best_individual, best_fitness);
+//	printf("in the tournament of members ");
+//	print_arr(k, idxs);
+//	printf(", the winner was %i (fitness %i)\n", best_individual, best_fitness);
 	return best_individual;
 }
 
@@ -147,7 +164,7 @@ unsigned int hill_climber ( char* target, char* alphabet ) {
 	return attempts;
 }
 
-/* genetic algorithm, no crossover. TODO - replacing members of population. */
+/* genetic algorithm, no crossover. */
 unsigned int ga_no_crossover ( int pop_size, char* target,
                                char* alphabet, int tournament_k ) {
 	/* get info. */
@@ -164,22 +181,16 @@ unsigned int ga_no_crossover ( int pop_size, char* target,
 		pop_fitness[i] = fitness(pop[i], target);
 	}
 
-	/* print. */
-	printf("  target: %s\n", target);
-	for ( int i=0; i<pop_size; i++ ) {
-		printf("member %i: %s -> %i\n", i, pop[i], pop_fitness[i]);
-	}
-
-	int best = tournament(tournament_k, pop_size, len_target, pop, pop_fitness);
+	int best = tournament(tournament_k, pop_size, len_target, pop, pop_fitness, 1);
 	char* winner = pop[best];
 	unsigned int attempts = 0;
 
-	/* climb. */
+	/* evolve. */
 	while ( strcmp(winner, target) ) {
 		attempts++;
 
 		/* perform tournament selection. */
-		best = tournament(tournament_k, pop_size, len_target, pop, pop_fitness);
+		best = tournament(tournament_k, pop_size, len_target, pop, pop_fitness, 1);
 		winner = pop[best];
 
 		/* mutate the winner. */
@@ -187,9 +198,14 @@ unsigned int ga_no_crossover ( int pop_size, char* target,
 		mutate(len_target, winner, mutant, len_alpha, alphabet);
 
 		/* reinsert the winner, and recalculate fitness. */
-		// TODO
-//		strcpy(pop[best], winner);
-//		pop_fitness[best] = fitness(winner, target);
+		int to_delete = tournament(tournament_k, pop_size, len_target, pop, pop_fitness, 0);
+		strcpy(pop[to_delete], winner);
+		pop_fitness[to_delete] = fitness(winner, target);
+
+		/* if this prints, something's wrong. */
+		if ( attempts % 1000000 == 0 ) {
+			printf("%i -> %s (%i)\n", attempts, winner, pop_fitness[best]);
+		}
 	}
 
 	/* return number of attempts. */
