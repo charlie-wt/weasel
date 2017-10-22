@@ -15,10 +15,6 @@ int tournament ( unsigned int k, int pop_size, int len_target,
                  char pop[pop_size][len_target+1],
                  int pop_fitness[pop_size], int return_winner );
 
-/*void n_tournament ( unsigned int k, unsigned int n, int pop_size, int len_target,
-                    char pop[pop_size][len_target+1],
-                    int pop_fitness[pop_size], int winners[n] );*/
-
 int contains ( int size, int* arr, int val );
 
 unsigned int hill_climber ( char* target, char* alphabet, int prnt );
