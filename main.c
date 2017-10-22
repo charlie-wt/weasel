@@ -117,14 +117,6 @@ int contains ( int size, int* arr, int val ) {
 	return 0;
 }
 
-void print_arr ( int size, int* arr ) {
-	printf("%i", arr[0]);
-	for ( int i=1; i<size-1; i++ ) {
-		printf(", %i", arr[i]);
-	}
-	if ( size > 1 ) { printf(" & %i", arr[size-1]); }
-}
-
 unsigned int hill_climber ( char* target, char* alphabet, int prnt ) {
 	/* get info. */
 	int len_alpha  = (int)strlen(alphabet);
@@ -224,7 +216,7 @@ void crossover ( int num_parents, int len_parent,
 	child[len_parent] = '\0';
 }
 
-/* genetic algorithm, with crossover. TODO - crossover. */
+/* genetic algorithm, with crossover. */
 unsigned int ga ( int pop_size, char* target, char* alphabet,
                   int tournament_k, int prnt ) {
 	/* get info. */
@@ -284,4 +276,12 @@ unsigned int ga ( int pop_size, char* target, char* alphabet,
 	/* return number of attempts. */
 	if (prnt) { printf("== Solution reached @ %i ==\n", attempts); }
 	return attempts;
+}
+
+void print_arr ( int size, int* arr ) {
+	printf("%i", arr[0]);
+	for ( int i=1; i<size-1; i++ ) {
+		printf(", %i", arr[i]);
+	}
+	if ( size > 1 ) { printf(" & %i", arr[size-1]); }
 }
