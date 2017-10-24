@@ -1,24 +1,40 @@
 #include "main.h"
 
-int main () {
+int main (int argc, char* argv[]) {
 	/* initialise. */
 	char* alphabet = "abcdefghijklmnopqrstuvwxyz ";
 	char* target = "methinks it is like a weasel";
+	int epochs = 10;
+	if ( argc == 2 ) {
+		epochs = atoi(argv[1]);
+	}
 
 	/* hill climber. */
 	printf("=== HILL CLIMBER ===\n");
-	int hill_attempts = hill_climber(target, alphabet, 0);
-	printf("took %i attempts with the hill climber.\n", hill_attempts);
+	float hill_attempts = 0;
+	for ( int i=0; i<epochs; i++ ) {
+		 hill_attempts += hill_climber(target, alphabet, 0);
+	}
+	hill_attempts /= epochs;
+	printf("took average %i attempts with the hill climber.\n", (int)floor(hill_attempts));
 
 	/* non-crossover ga */
 	printf("=== GA, NO CROSSOVER ===\n");
-	int nga_attempts = ga_no_crossover(10, target, alphabet, 2, 0);
-	printf("took %i attempts with the non-crossover genetic algorithm.\n", nga_attempts);
+	float nga_attempts = 0;
+	for ( int i=0; i<epochs; i++ ) {
+		nga_attempts += ga_no_crossover(10, target, alphabet, 2, 0);
+	}
+	nga_attempts /= epochs;
+	printf("took average %i attempts with the non-crossover genetic algorithm.\n", (int)floor(nga_attempts));
 
 	/* ga */
 	printf("=== GA, WITH CROSSOVER ===\n");
-	int ga_attempts = ga(10, target, alphabet, 2, 0);
-	printf("took %i attempts with the crossover genetic algorithm.\n", ga_attempts);
+	float ga_attempts = 0;
+	for ( int i=0; i<epochs; i++ ) {
+		ga_attempts += ga(10, target, alphabet, 2, 0);
+	}
+	ga_attempts /= epochs;
+	printf("took average %i attempts with the crossover genetic algorithm.\n", (int)floor(ga_attempts));
 
 	/* return. */
 	return 0;
@@ -58,7 +74,7 @@ int fitness ( char* individual, char* target ) {
 
 /* change on average 1 character, and return the new string. */
 void mutate ( unsigned int len, char original[len+1], char mutant[len+1],
-               unsigned int len_alpha, char alphabet[len_alpha+1] ) {
+              unsigned int len_alpha, char alphabet[len_alpha+1] ) {
 	for ( int i=0; i<len; i++ ) {
 		if ( !(rand() % len) ) {
 			mutant[i] = alphabet[rand() % len_alpha];
@@ -88,12 +104,7 @@ int tournament ( unsigned int k, int pop_size, int len_target,
 	// when selecting a member to remove at each step, use inverse-tournament.
 	int better (int a, int b) { return a > b; }
 	int worse (int a, int b) { return a < b; }
-	int (*compete)(int a, int b);
-	if (return_winner) {
-		compete = better;
-	} else {
-		compete = worse;
-	}
+	int (*compete)(int a, int b) = ( return_winner ? better : worse);
 
 	// have tournament
 	int best_fitness = pop_fitness[idxs[0]];
